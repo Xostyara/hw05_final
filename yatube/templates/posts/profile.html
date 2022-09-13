@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% block title %}
+{% if author.get_full_name %}
+{{ author.get_full_name }}
+{% else %}
+{{ author.username }}
+{% endif %}
+Профайл пользователя
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card-body">
+      <h1 class="card-title">Все посты пользователя
+        {% if user_author.get_full_name %}{{ user_author.get_full_name }}
+        {% else %}{{ user_author.username }}
+        {% endif %}
+      </h1>
+      <h3 class="card-text">Всего постов: {{ user_author.posts.count }} </h3>
+      {% if following %}
+      <a class="btn btn-lg btn-light"
+         href="{% url 'posts:profile_unfollow' user_author.username %}" role="button">
+        Отписаться
+      </a>
+      {% else %}
+      <a class="btn btn-lg btn-primary"
+         href="{% url 'posts:profile_follow' user_author.username %}" role="button">
+        Подписаться
+      </a>
+      {% endif %}
+</div>
+{% load thumbnail %} 
+{% for post in page_obj %}
+{% include 'posts/post.html' %}
+{% if not forloop.last %}<hr>{% endif %}
+{% endfor %}
+{% include 'posts/includes/paginator.html' %}
+{% endblock %}
