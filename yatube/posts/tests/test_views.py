@@ -197,14 +197,14 @@ class PostsViewsTest(TestCase):
         post = Post.objects.create(
             text='Пост под кеш',
             author=self.user)
-        content_add = self.authorized_client.get(
+        content_add = self.auth_client.get(
             reverse('posts:index')).content
         post.delete()
-        content_delete = self.authorized_client.get(
+        content_delete = self.auth_client.get(
             reverse('posts:index')).content
         self.assertEqual(content_add, content_delete)
         cache.clear()
-        content_cache_clear = self.authorized_client.get(
+        content_cache_clear = self.auth_client.get(
             reverse('posts:index')).content
         self.assertNotEqual(content_add, content_cache_clear)
 

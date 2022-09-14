@@ -85,7 +85,6 @@ class PostsURLTests(TestCase):
         шаблон для всех пользователей."""
         # Шаблоны по адресам
         templates_url_names = {
-            '/': 'posts/index.html',
             f'/group/{self.post.group.slug}/': 'posts/group_list.html',
             f'/profile/{self.post.author}/': 'posts/profile.html',
             f'/posts/{self.post.id}/': 'posts/post_detail.html',
