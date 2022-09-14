@@ -1,8 +1,7 @@
 from django.core.paginator import Paginator
-from django.conf import settings
-
 
 POSTS_PER_PAGE = 10
+
 
 # Выносим Пагинацию отдельно
 def paginate_page(request, post_list):

@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -209,6 +208,7 @@ class PostsViewsTest(TestCase):
             reverse('posts:index')).content
         self.assertNotEqual(content_add, content_cache_clear)
 
+
 class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -231,6 +231,7 @@ class PaginatorViewsTest(TestCase):
         Post.objects.bulk_create(posts)
 
         cls.client = Client()
+
 
 class FollowViewsTest(TestCase):
     @classmethod
@@ -297,3 +298,4 @@ class FollowViewsTest(TestCase):
             text="Подпишись на меня")
         response = self.author_client.get(
             reverse('posts:follow_index'))
+        self.assertNotIn(post, response.context['page_obj'].object_list)

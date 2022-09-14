@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-handler404 = 'core.views.page_not_found'   
+handler404 = 'core.views.page_not_found'
 urlpatterns = [
     # импорт правил из приложения posts
     path('', include('posts.urls', namespace='posts')),

@@ -81,12 +81,12 @@ def post_detail(request, post_id):
         Post.objects.select_related(
             'author',
             'group'
-        ), 
+        ),
         pk=post_id)
     form = CommentForm(request.POST or None)
     comments = Comment.objects.filter(post=post)
     context = {
-        'comments':comments,
+        'comments': comments,
         'post': post,
         'form': form,
     }
@@ -150,10 +150,11 @@ def post_edit(request, post_id):
     }
     return render(request, 'posts/create_post.html', context)
 
+
 @login_required
 def add_comment(request, post_id):
     # Получите пост
-    post = get_object_or_404(Post, id=post_id) 
+    post = get_object_or_404(Post, id=post_id)
     form = CommentForm(request.POST or None)
     if form.is_valid():
         comment = form.save(commit=False)
@@ -161,6 +162,7 @@ def add_comment(request, post_id):
         comment.post = post
         comment.save()
     return redirect('posts:post_detail', post_id=post_id)
+
 
 @login_required
 def follow_index(request):
