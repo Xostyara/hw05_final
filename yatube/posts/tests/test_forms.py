@@ -17,6 +17,7 @@ User = get_user_model()
 # временная папка TEMP_MEDIA_ROOT, а потом мы ее удалим
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
+
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class TaskCreateFormTests(TestCase):
     @classmethod
@@ -52,8 +53,9 @@ class TaskCreateFormTests(TestCase):
             content=small_gif,
             content_type='image/gif'
         )
+
     @classmethod
-    def tearDownClass(cls) :
+    def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
@@ -74,7 +76,7 @@ class TaskCreateFormTests(TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         upload = self.uploaded
-        
+
         form_data = {
             'text': 'Test post',
             'group': TaskCreateFormTests.group.id,
@@ -104,10 +106,6 @@ class TaskCreateFormTests(TestCase):
         self.assertEqual(post.group, TaskCreateFormTests.group)
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(post.image, 'posts/small.gif')
-
-
-        # def test_auth_user_can_edit_his_post(self):
-        # pass
 
     def test_authorized_user_edit_post(self):
         # проверка редактирования записи авторизованным пользователем

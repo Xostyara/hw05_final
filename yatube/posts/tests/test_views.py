@@ -97,7 +97,7 @@ class PostsViewsTest(TestCase):
         response = self.auth_client.get(reverse("posts:index"))
         self.check_context_contains_page_or_post(response.context)
         self.assertContains(response, '<img')
-        
+
     def test_group_posts_correct_context(self):
         response = self.auth_client.get(
             reverse(
@@ -243,7 +243,7 @@ class PaginatorViewsTest(TestCase):
         cache.clear()
 
         cls.client = Client()
-    
+
     def test_first_page_contains_ten_records(self):
         """Проверка пагинации на первой странице"""
         TEST_OF_PAGI_1: int = 10
@@ -263,6 +263,7 @@ class PaginatorViewsTest(TestCase):
                 self.assertEqual(len(response.context.get(
                     'page_obj'
                 ).object_list), TEST_OF_PAGI_2)
+
 
 class FollowViewsTest(TestCase):
     @classmethod

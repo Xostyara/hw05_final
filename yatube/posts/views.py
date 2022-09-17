@@ -61,10 +61,10 @@ def profile(request, username):
 
     user_posts = user_author.posts.all()
     page_obj = paginate_page(request, user_posts)
-    following = request.user.is_authenticated and Follow.objects.filter( 
-        user=request.user, 
-        author=user_author 
-    ).exists() 
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user,
+        author=user_author
+    ).exists()
     context = {
         'page_obj': page_obj,
         'following': following,
@@ -193,5 +193,5 @@ def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     follow_qs = Follow.objects.filter(author=author, user=request.user)
     if follow_qs.exists():
-        follow_qs.delete() 
+        follow_qs.delete()
     return redirect('posts:profile', username)
