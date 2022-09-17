@@ -95,6 +95,11 @@ class Follow(models.Model):
         # удобое читаемое имя в множественнои и единственном числе
         verbose_name_plural = 'Подписки'
         verbose_name = 'Подписка'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'], name='unique_author_user_following'
+            )
+        ]
 
     def __str__(self):
         return f'{self.user} подписался на {self.author}'

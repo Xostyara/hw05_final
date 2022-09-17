@@ -96,7 +96,8 @@ class PostsViewsTest(TestCase):
     def test_index_correct_context(self):
         response = self.auth_client.get(reverse("posts:index"))
         self.check_context_contains_page_or_post(response.context)
-
+        self.assertContains(response, '<img')
+        
     def test_group_posts_correct_context(self):
         response = self.auth_client.get(
             reverse(
@@ -110,6 +111,7 @@ class PostsViewsTest(TestCase):
         group = response.context['group']
         self.assertEqual(group.title, PostsViewsTest.group.title)
         self.assertEqual(group.description, PostsViewsTest.group.description)
+        self.assertContains(response, '<img')
 
     def test_post_detail_correct_context(self):
         response = self.auth_client.get(
@@ -121,6 +123,7 @@ class PostsViewsTest(TestCase):
         self.check_context_contains_page_or_post(response.context, post=True)
         self.assertIn('user', response.context)
         self.assertEqual(response.context['user'], PostsViewsTest.user)
+        self.assertContains(response, '<img')
 
     def test_post_edit_correct_context(self):
         pages = {
@@ -172,6 +175,7 @@ class PostsViewsTest(TestCase):
             )
         )
         self.check_context_contains_page_or_post(response.context)
+        self.assertContains(response, '<img')
 
     def test_post_created_at_right_group_and_profile(self):
         """Тестовый пост создан не в той группе и профиле"""
@@ -213,25 +217,52 @@ class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-
-        cls.user = User.objects.create_user(
-            username="qwerty"
-        )
+        cls.author = User.objects.create_user(username='test_user')
+        cls.authorized_client = Client()
+        cls.authorized_client.force_login(cls.author)
         cls.group = Group.objects.create(
-            description="Тестовое описание",
-            slug="test-slug",
-            title="Тестовое название"
+            title='test_group',
+            slug='test-slug',
+            description='test_description'
         )
-        posts = [
+        cls.posts = [
             Post(
-                text=f'text {num}', author=cls.user,
-                group=cls.group
-            ) for num in range(1, 14)
+                author=cls.author,
+                text='test_post',
+                group=cls.group,
+            ) for i in range(1, 14)
         ]
-        Post.objects.bulk_create(posts)
+        Post.objects.bulk_create(cls.posts)
+        cls.templates = {
+            1: reverse('posts:index'),
+            2: reverse('posts:group_list',
+                       kwargs={'slug': f'{cls.group.slug}'}),
+            3: reverse('posts:profile',
+                       kwargs={'username': f'{cls.author.username}'})
+        }
+        cache.clear()
 
         cls.client = Client()
+    
+    def test_first_page_contains_ten_records(self):
+        """Проверка пагинации на первой странице"""
+        TEST_OF_PAGI_1: int = 10
+        for i in PaginatorViewsTest.templates.keys():
+            with self.subTest(i=i):
+                response = self.client.get(self.templates[i])
+                self.assertEqual(len(response.context.get(
+                    'page_obj'
+                ).object_list), TEST_OF_PAGI_1)
 
+    def test_second_page_contains_three_records(self):
+        """Проверка пагинации на второй странице"""
+        TEST_OF_PAGI_2: int = 3
+        for i in PaginatorViewsTest.templates.keys():
+            with self.subTest(i=i):
+                response = self.client.get(self.templates[i] + '?page=2')
+                self.assertEqual(len(response.context.get(
+                    'page_obj'
+                ).object_list), TEST_OF_PAGI_2)
 
 class FollowViewsTest(TestCase):
     @classmethod
@@ -261,7 +292,7 @@ class FollowViewsTest(TestCase):
             reverse(
                 'posts:profile_follow',
                 kwargs={'username': self.post_follower}))
-        follow = Follow.objects.all().latest('id')
+        follow = Follow.objects.first()
         self.assertEqual(Follow.objects.count(), count_follow + 1)
         self.assertEqual(follow.author_id, self.post_follower.id)
         self.assertEqual(follow.user_id, self.post_autor.id)
@@ -272,12 +303,12 @@ class FollowViewsTest(TestCase):
             user=self.post_autor,
             author=self.post_follower
         )
-        count_follow = Follow.objects.count()
+        # count_follow = Follow.objects.count()
         self.follower_client.post(
             reverse(
                 'posts:profile_unfollow',
                 kwargs={'username': self.post_follower}))
-        self.assertEqual(Follow.objects.count(), count_follow - 1)
+        self.assertEqual(Follow.objects.count(), 0)
 
     def test_follow_on_authors(self):
         """Проверка записей у тех кто подписан."""

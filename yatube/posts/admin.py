@@ -1,5 +1,6 @@
+from xml.etree.ElementTree import Comment
 from django.contrib import admin
-from .models import Post, Group
+from .models import Post, Group, Comment
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -15,9 +16,14 @@ class PostAdmin(admin.ModelAdmin):
 
 
 class GroupAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'title', 'slug',)
+    list_display = ('pk', 'title', 'slug')
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'post', 'name', 'text', 'author')
 
 
 # Register your models here.
 admin.site.register(Post, PostAdmin)
 admin.site.register(Group, GroupAdmin)
+admin.site.register(Comment, CommentAdmin)
