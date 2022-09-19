@@ -1,4 +1,3 @@
-from pydoc import pager
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -259,9 +258,11 @@ class PaginatorViewsTest(TestCase):
                         address, {'page': page}
                     )
                     self.assertEqual(
-                        len(response.context.get(
+                        len(
+                            response.context.get(
                             'page_obj'
-                            ).object_list), count)
+                            ).object_list), count
+                    )
 
         # TEST_OF_PAGI_1: int = 10
         # for i in PaginatorViewsTest.templates.keys():
