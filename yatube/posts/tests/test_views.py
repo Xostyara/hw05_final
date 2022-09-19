@@ -260,8 +260,8 @@ class PaginatorViewsTest(TestCase):
                     self.assertEqual(
                         len(
                             response.context.get(
-                            'page_obj'
-                            ).object_list), count
+                                'page_obj'
+                                ).object_list), count
                     )
 
         # TEST_OF_PAGI_1: int = 10
