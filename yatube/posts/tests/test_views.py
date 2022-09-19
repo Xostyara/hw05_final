@@ -1,3 +1,4 @@
+from pydoc import pager
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -230,7 +231,7 @@ class PaginatorViewsTest(TestCase):
                 author=cls.author,
                 text='test_post',
                 group=cls.group,
-            ) for i in range(1, 14)
+            ) for i in range(1, 15)
         ]
         Post.objects.bulk_create(cls.posts)
         cls.templates = {
@@ -245,24 +246,40 @@ class PaginatorViewsTest(TestCase):
         cls.client = Client()
 
     def test_first_page_contains_ten_records(self):
-        """Проверка пагинации на первой странице"""
-        TEST_OF_PAGI_1: int = 10
-        for i in PaginatorViewsTest.templates.keys():
-            with self.subTest(i=i):
-                response = self.client.get(self.templates[i])
-                self.assertEqual(len(response.context.get(
-                    'page_obj'
-                ).object_list), TEST_OF_PAGI_1)
+        """Проверка пагинации по всем страницам"""
 
-    def test_second_page_contains_three_records(self):
-        """Проверка пагинации на второй странице"""
-        TEST_OF_PAGI_2: int = 3
-        for i in PaginatorViewsTest.templates.keys():
-            with self.subTest(i=i):
-                response = self.client.get(self.templates[i] + '?page=2')
-                self.assertEqual(len(response.context.get(
-                    'page_obj'
-                ).object_list), TEST_OF_PAGI_2)
+        pages = {
+            1: 10,
+            2: 4,
+        }
+        for page, count in pages.items():
+            for key, address in self.templates.items():
+                with self.subTest(name=address, page=page):
+                    response = self.authorized_client.get(
+                        address, {'page': page}
+                    )
+                    self.assertEqual(
+                        len(response.context.get(
+                            'page_obj'
+                            ).object_list), count)
+
+        # TEST_OF_PAGI_1: int = 10
+        # for i in PaginatorViewsTest.templates.keys():
+        #     with self.subTest(i=i):
+        #         response = self.client.get(self.templates[i])
+        #         self.assertEqual(len(response.context.get(
+        #             'page_obj'
+        #         ).object_list), TEST_OF_PAGI_1)
+
+    # def test_second_page_contains_three_records(self):
+    #     """Проверка пагинации на второй странице"""
+    #     TEST_OF_PAGI_2: int = 3
+    #     for i in PaginatorViewsTest.templates.keys():
+    #         with self.subTest(i=i):
+    #             response = self.client.get(self.templates[i] + '?page=2')
+    #             self.assertEqual(len(response.context.get(
+    #                 'page_obj'
+    #             ).object_list), TEST_OF_PAGI_2)
 
 
 class FollowViewsTest(TestCase):
